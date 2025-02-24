@@ -1,4 +1,7 @@
 import PIL.Image
+from PIL import Image
+import numpy as np
+import cv2
 # regular
 #caracteres = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.', ' ']
 # negrito
@@ -24,10 +27,13 @@ def pixel_para_texto(imagem):
 
 def imagem_para_ascii(caminho_da_imagem, nova_largura):
     """Converte uma imagem em arte ASCII."""
-    try:
-        imagem = PIL.Image.open(caminho_da_imagem)
-    except FileNotFoundError:
-        return "Imagem não encontrada."
+    if isinstance(caminho_da_imagem, np.ndarray):  # Verifica se é um quadro do OpenCV
+        imagem = Image.fromarray(cv2.cvtColor(caminho_da_imagem, cv2.COLOR_BGR2RGB))  # Converte o quadro para uma imagem PIL
+    else:
+        try:
+            imagem = Image.open(caminho_da_imagem)  # Abre a imagem a partir do caminho
+        except FileNotFoundError:
+            return "Imagem não encontrada."
 
     imagem_transformada = escala_da_imagem(imagem, nova_largura)
     imagem_dessaturada = dessaturar(imagem_transformada)
